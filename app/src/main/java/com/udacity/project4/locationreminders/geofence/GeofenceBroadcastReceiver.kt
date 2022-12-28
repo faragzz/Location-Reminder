@@ -34,8 +34,18 @@ import com.udacity.project4.locationreminders.savereminder.CurrentDataViewModel
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == ACTION_GEOFENCE_EVENT) {
-            GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
+
+        if(intent.action == "action_geofence"){
+            val geofencingEvent =GeofencingEvent.fromIntent(intent)
+
+            if (geofencingEvent.hasError()) {
+                Log.e("GeofenceBroadcastRecive", geofencingEvent.errorCode.toString())
+                return
+            }
+
+            if(geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
+                GeofenceTransitionsJobIntentService.enqueueWork(context,intent)
+            }
         }
     }
 }

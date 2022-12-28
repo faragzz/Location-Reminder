@@ -53,7 +53,7 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun getReminder_id()= runBlocking{
+    fun getReminder_ById()= runBlocking{
         val data = ReminderDTO("TestTitle","TestDes","TestLocation",70.0,80.0,"2")
         repo.saveReminder(data)
         val dataReturned = repo.getReminder(data.id)

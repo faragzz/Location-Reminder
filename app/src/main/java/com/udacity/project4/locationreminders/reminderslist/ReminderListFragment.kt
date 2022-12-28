@@ -15,9 +15,12 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.savereminder.CurrentDataViewModel
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import com.udacity.project4.utils.setTitle
 import com.udacity.project4.utils.setup
+import kotlinx.android.synthetic.main.fragment_reminders.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReminderListFragment : BaseFragment() {
@@ -37,26 +40,30 @@ class ReminderListFragment : BaseFragment() {
             )
         binding.viewModel = _viewModel
 
+
+
         binding.reminderssRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(false)
         setTitle(getString(R.string.app_name))
 
-        if(_viewModel.containInList.value == false){
-            binding.noDataTextView.setVisibility(View.INVISIBLE);
-        }else{
-            binding.noDataTextView.setVisibility(View.VISIBLE);
-        }
-
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
-        
+
+        _viewModel.containInList.observe(viewLifecycleOwner, Observer {
+            if(it){
+                noDataTextView.setVisibility(View.VISIBLE);
+            }
+            else{
+                noDataTextView.setVisibility(View.GONE);
+            }
+        })
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        binding.addReminderFAB.setOnClickListener {
+        addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
         setupRecyclerView()
@@ -74,6 +81,7 @@ class ReminderListFragment : BaseFragment() {
         currentviewModel.des.value = ""
         currentviewModel.lat.value = 0.0
         currentviewModel.long.value = 0.0
+
         _viewModel.navigationCommand.postValue(
             NavigationCommand.To(
                 ReminderListFragmentDirections.toSaveReminder()
@@ -83,11 +91,12 @@ class ReminderListFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         _viewModel.remindersList.observe(viewLifecycleOwner, Observer {
-            binding.reminderssRecyclerView.adapter = RemindersListAdapter(
+            reminderssRecyclerView.adapter = RemindersListAdapter(
                 object : RemindersListAdapter.OnClickListener {
                     override fun onClick(item: ReminderDataItem) {
                         currentviewModel.title.value = item.title
                         currentviewModel.des.value = item.description
+                        currentviewModel.location.value = item.location
                         currentviewModel.lat.value = item.latitude
                         currentviewModel.long.value = item.longitude
                         _viewModel.navigationCommand.postValue(NavigationCommand.To
@@ -116,5 +125,6 @@ class ReminderListFragment : BaseFragment() {
 //        display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
     }
+
 
 }

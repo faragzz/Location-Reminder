@@ -62,6 +62,9 @@ class RemindersListViewModel(
          if(remindersList.value == null || remindersList.value!!.isEmpty()){
              containInList.value = true
          }
-        containInList.value = false
+        else{
+             containInList.value = false
+         }
+
     }
 }

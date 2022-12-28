@@ -29,7 +29,7 @@ class RemindersListAdapter(private val onClickEvent:OnClickListener,var items:Li
         val item = items[position]
         holder.title.text = item.title
         holder.des.text = item.description
-        holder.location.text = "GooglePlex"//item.location
+        holder.location.text = item.location//item.location
         holder.location.setOnClickListener {
             onClickEvent.onClick(item)
         }
